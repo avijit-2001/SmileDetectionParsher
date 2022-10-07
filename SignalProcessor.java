@@ -2,7 +2,6 @@ import com.github.psambit9791.jdsp.signal.CrossCorrelation;
 import com.github.psambit9791.jdsp.transform.DiscreteFourier;
 import com.github.psambit9791.jdsp.transform.Hilbert;
 import org.apache.commons.math3.complex.Complex;
-
 import java.util.ArrayList;
 
 public class SignalProcessor {
@@ -13,6 +12,7 @@ public class SignalProcessor {
     private double[][] initialPoints;
     private double[] distances;
     private double[] center;
+
 
     public SignalProcessor() {
         mixedSamplesPhase = new double[NUMBER_OF_INITIAL][SAMPLE_LENGTH];
@@ -35,7 +35,7 @@ public class SignalProcessor {
         }
         return sample;
     }
-    void FourierTransform(double[] chirp, double[] direct, double[] record)
+    Complex[] FourierTransform(double[] chirp, double[] direct, double[] record)
     {
         double[] rSample = signalMultiplication(chirp, record);
         double[] dSample = signalMultiplication(chirp, direct);
@@ -80,16 +80,15 @@ public class SignalProcessor {
 
         double[] amplitude = new double[mixedRFftComplex.length];
         double[] angle = new double[mixedRFftComplex.length];
+        Complex[] ifSignal = new Complex[mixedRFftComplex.length];
         for(int i=0; i<mixedRFftComplex.length; i++){
 
             Complex value = mixedRFftComplex[i].subtract(mixedDFftcomplex[i]);
             amplitude[i] = value.abs();
             angle[i] = value.getArgument();
+            ifSignal[i] = value;
         }
-        System.out.println("LENGTH: " + mixedRFftComplex.length);
-        System.out.println("Print time: " + String.format("%d",time));
-        System.out.println("Amplitude Mean: " + getMean(amplitude));
-        System.out.println("Angle Mean: " + getMean(angle));
+        return ifSignal;
     }
 
     public double[] toArrayManual(ArrayList<Double> arrayList) {
